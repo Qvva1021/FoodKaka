@@ -1,52 +1,26 @@
-import 'dart:async';
-
 import 'package:material_ui/material_ui.dart';
 
+import '../data/food_store.dart';
 import '../theme.dart';
 import '../widgets/rice_ball.dart';
+import '../widgets/meal_list.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
-  late DateTime _today;
-  Timer? _midnightTimer;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _updateDate();
-  }
-
-  void _updateDate() {
-    _today = DateTime.now();
-    _midnightTimer?.cancel();
-    final midnight = DateTime(_today.year, _today.month, _today.day + 1);
-    _midnightTimer = Timer(midnight.difference(_today), () {
-      if (mounted) setState(_updateDate);
-    });
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) setState(_updateDate);
-  }
-
-  @override
-  void dispose() {
-    _midnightTimer?.cancel();
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
+class HomePage extends StatelessWidget {
+  const HomePage({
+    super.key,
+    required this.profile,
+    required this.log,
+    required this.onAdd,
+    required this.onEdit,
+    required this.onDelete,
+  });
+  final Profile profile;
+  final DayLog log;
+  final VoidCallback onAdd;
+  final ValueChanged<Meal> onEdit, onDelete;
   @override
   Widget build(BuildContext context) => ListView(
-    padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
+    padding: const EdgeInsets.all(24),
     children: [
       Row(
         children: [
@@ -55,18 +29,21 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${_today.month}月${_today.day}日 · 今天',
-                  style: const TextStyle(color: muted, fontSize: 14),
+                  '${log.date.month}月${log.date.day}日 · 今天',
+                  style: const TextStyle(color: muted),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  '好好吃饭，慢慢记录',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+                Text(
+                  '嗨，${profile.nickname}',
+                  style: const TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
+                const Text('好好吃饭，慢慢记录', style: TextStyle(color: muted)),
               ],
             ),
           ),
-          const SizedBox(width: 8),
           const RiceBall(size: 58),
         ],
       ),
@@ -76,9 +53,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              const Text(
-                '今日剩余额度',
-                style: TextStyle(color: muted, fontSize: 16),
+              Text(
+                log.remaining < 0 ? '今天超出预算' : '今日剩余额度',
+                style: const TextStyle(color: muted, fontSize: 16),
               ),
               const SizedBox(height: 24),
               SizedBox.square(
@@ -88,40 +65,43 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   children: [
                     Positioned.fill(
                       child: CircularProgressIndicator(
-                        value: 0,
+                        value: (log.total / log.budget).clamp(0, 1),
                         strokeWidth: 12,
                         backgroundColor: mint,
+                        color: peach,
                       ),
                     ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '—',
-                          style: Theme.of(context).textTheme.displayMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: ink,
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          FittedBox(
+                            child: Text(
+                              kcal(log.remaining.abs()),
+                              key: const Key('remaining'),
+                              style: const TextStyle(
+                                fontSize: 42,
+                                fontWeight: FontWeight.w800,
                               ),
-                        ),
-                        const Text('kcal', style: TextStyle(color: muted)),
-                      ],
+                            ),
+                          ),
+                          const Text('kcal', style: TextStyle(color: muted)),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
-                '设置每日预算后，在这里看剩余额度',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: muted),
-              ),
-              const SizedBox(height: 20),
-              const Wrap(
+              Wrap(
                 alignment: WrapAlignment.center,
-                spacing: 24,
+                spacing: 20,
                 runSpacing: 8,
-                children: [Text('已摄入  — kcal'), Text('每日预算  — kcal')],
+                children: [
+                  Text('已摄入 ${kcal(log.total)} kcal'),
+                  Text('预算 ${kcal(log.budget)} kcal'),
+                ],
               ),
             ],
           ),
@@ -131,40 +111,27 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       FilledButton.icon(
         onPressed: null,
         icon: const Icon(Icons.camera_alt_outlined),
-        label: const Text(
-          '拍一餐',
-          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+        label: const Text('拍一餐'),
+      ),
+      const Text(
+        '拍照识别将在第三阶段开放',
+        textAlign: TextAlign.center,
+        style: TextStyle(color: muted, fontSize: 12),
+      ),
+      Center(
+        child: TextButton.icon(
+          onPressed: onAdd,
+          icon: const Icon(Icons.add),
+          label: const Text('手动添加'),
         ),
       ),
-      const Center(child: TextButton(onPressed: null, child: Text('手动添加'))),
-      const Text(
-        '记账将在第二阶段开放，拍照识别将在第三阶段开放',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 12, color: muted),
-      ),
-      const SizedBox(height: 28),
+      const SizedBox(height: 20),
       const Text(
         '今天吃了什么',
         style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700),
       ),
       const SizedBox(height: 12),
-      const Card(
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Column(
-            children: [
-              Icon(Icons.restaurant_rounded, color: muted, size: 30),
-              SizedBox(height: 12),
-              Text(
-                '还没有记录',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              SizedBox(height: 6),
-              Text('每一餐，都值得好好记下', style: TextStyle(color: muted)),
-            ],
-          ),
-        ),
-      ),
+      MealList(meals: log.meals, onEdit: onEdit, onDelete: onDelete),
     ],
   );
 }

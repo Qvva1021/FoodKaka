@@ -1,5 +1,6 @@
 $ErrorActionPreference = 'Stop'
-$FlutterArgs = if ($args.Count) { $args } else { @('doctor', '-v') }
+$FlutterArgs = @($args)
+if (-not $FlutterArgs.Count) { $FlutterArgs = @('doctor', '-v') }
 $projectRoot = Split-Path $PSScriptRoot -Parent
 $toolsRoot = Join-Path $projectRoot '.tools'
 $flutterCommand = Join-Path $toolsRoot 'flutter\bin\flutter.bat'

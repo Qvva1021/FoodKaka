@@ -2,7 +2,7 @@
 
 个人使用的 Android 饮食记账本，使用 Flutter / Dart 开发。
 
-当前只实现新版方案的第一阶段：Android 工程、今日/记录/我的三个页面、奶油可爱主题和饭团图形。记账、资料编辑和 AI 功能尚未开放，界面没有虚构的摄入记录。
+当前已完成第二阶段：个人资料与 BMI、SQLite 本地存储、每日预算、手动记餐、历史补记、修改和删除。首次打开填写个人资料后即可离线记账。拍照与 AI 留到第三阶段。
 
 ## 本机运行
 
@@ -33,7 +33,7 @@ $env:ANDROID_AVD_HOME = "$env:ANDROID_USER_HOME\avd"
 .\.tools\flutter\bin\cache\dart-sdk\bin\dart.exe format --output=none --set-exit-if-changed lib test
 ```
 
-测试覆盖三页导航、禁用的占位按钮，以及 320 × 640 逻辑像素和 1.5 倍字体下的页面布局与滚动。
+测试覆盖 SQLite 持久化、BMI 与热量、历史预算快照、编辑删除、事务回滚、首次资料填写、多食物保存和防重复提交，以及窄屏与大字体布局。
 
 调试构建仅用于开发验收：
 
@@ -50,6 +50,7 @@ $env:ANDROID_AVD_HOME = "$env:ANDROID_USER_HOME\avd"
 | `lib/main.dart` | 应用入口和三个导航入口 |
 | `lib/theme.dart` | 共用颜色与组件样式 |
 | `lib/pages/` | 今日、记录、我的页面 |
+| `lib/data/food_store.dart` | 五张 SQLite 表、事务、预算与汇总 |
 | `lib/widgets/rice_ball.dart` | Flutter 画布绘制的饭团图形 |
 | `android/` | Android 原生工程与应用名称 |
 | `test/app_test.dart` | 界面测试 |
@@ -76,6 +77,6 @@ $env:ANDROID_USER_HOME = "$PWD\.tools\android-user"
 & .\.tools\android-sdk\cmdline-tools\latest\bin\android.exe --no-metrics --sdk "$PWD\.tools\android-sdk" sdk install 'ndk/28.2.13676358'
 ```
 
-第一阶段已通过静态检查、2 项界面测试、Debug APK 构建和 Android 模拟器中的安装/启动/三页切换验收。当前沿用模板最低 Android API 24（Android 7.0），尚未在用户真机上测试。
+第二阶段已通过静态检查、8 项测试、Debug APK 构建和 Android 模拟器中的填写/记账/重启持久化验收。当前沿用模板最低 Android API 24（Android 7.0），尚未在用户真机上测试。本地数据库不上传仓库；卸载或清理应用数据会丢失本机记录。
 
-第二阶段按原方案实现 SQLite 与本地记账；第三阶段才创建独立的 FastAPI 服务。[第一阶段验收记录与截图](方案/2026-11-16_第一阶段开发与验收.md) 已保存。
+第三阶段创建独立 FastAPI 服务并接入拍照识别。[第一阶段验收](方案/2026-11-16_第一阶段开发与验收.md) 与 [第二阶段验收](方案/2026-11-16_第二阶段开发与验收.md) 已保存。每阶段验证后提交并推送 GitHub，再继续下一阶段。

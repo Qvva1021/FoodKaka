@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../data/food_store.dart';
 import '../theme.dart';
 import '../widgets/rice_ball.dart';
+import 'connection_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({
@@ -160,8 +161,16 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           const SizedBox(height: 24),
+          OutlinedButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ConnectionPage()),
+            ),
+            icon: const Icon(Icons.wifi_outlined),
+            label: const Text('AI 服务连接与测试'),
+          ),
           const Text(
-            'AI 服务尚未接入，第三阶段开放。当前记账完全在本机运行。',
+            '记账始终保存在本机；照片仅在点击识别后联网发送。',
             style: TextStyle(color: muted),
           ),
         ],

@@ -2,7 +2,7 @@
 
 个人使用的 Android 饮食记账本，使用 Flutter / Dart 开发。
 
-当前已完成第二阶段：个人资料与 BMI、SQLite 本地存储、每日预算、手动记餐、历史补记、修改和删除。首次打开填写个人资料后即可离线记账。拍照与 AI 留到第三阶段。
+当前已实现个人资料与 BMI、SQLite 本地记账、历史编辑，以及第三阶段拍照/相册/识别确认和 FastAPI 服务。离线记账可以直接使用；真实 AI 识别需要在电脑端配置可用的免费视觉 API，尚未完成真实模型验收。
 
 ## 本机运行
 
@@ -51,6 +51,8 @@ $env:ANDROID_AVD_HOME = "$env:ANDROID_USER_HOME\avd"
 | `lib/theme.dart` | 共用颜色与组件样式 |
 | `lib/pages/` | 今日、记录、我的页面 |
 | `lib/data/food_store.dart` | 五张 SQLite 表、事务、预算与汇总 |
+| `lib/services/ai_service.dart` | 服务连接、安全存储、HTTP 与结果校验 |
+| `server/` | FastAPI 图片转发、免费模型限制及测试 |
 | `lib/widgets/rice_ball.dart` | Flutter 画布绘制的饭团图形 |
 | `android/` | Android 原生工程与应用名称 |
 | `test/app_test.dart` | 界面测试 |
@@ -77,6 +79,6 @@ $env:ANDROID_USER_HOME = "$PWD\.tools\android-user"
 & .\.tools\android-sdk\cmdline-tools\latest\bin\android.exe --no-metrics --sdk "$PWD\.tools\android-sdk" sdk install 'ndk/28.2.13676358'
 ```
 
-第二阶段已通过静态检查、8 项测试、Debug APK 构建和 Android 模拟器中的填写/记账/重启持久化验收。当前沿用模板最低 Android API 24（Android 7.0），尚未在用户真机上测试。本地数据库不上传仓库；卸载或清理应用数据会丢失本机记录。
+已通过客户端 12 项测试和后端 7 项测试，Android 模拟器验证本地持久化、真实 HTTP 连接、相册预览及配置缺失时不入账。当前最低 Android API 24（Android 7.0），尚未在用户真机上测试。本地数据库不上传仓库；卸载或清理应用数据会丢失本机记录。
 
-第三阶段创建独立 FastAPI 服务并接入拍照识别。[第一阶段验收](方案/2026-11-16_第一阶段开发与验收.md) 与 [第二阶段验收](方案/2026-11-16_第二阶段开发与验收.md) 已保存。每阶段验证后提交并推送 GitHub，再继续下一阶段。
+[服务配置与费用/地区限制](server/README.md)、[第一阶段验收](方案/2026-11-16_第一阶段开发与验收.md)、[第二阶段验收](方案/2026-11-16_第二阶段开发与验收.md)、[第三阶段已验证内容与待验证条件](方案/2026-11-16_第三阶段开发与验收.md) 已保存。每阶段验证后提交并推送 GitHub，再继续后续可独立完成的工作。

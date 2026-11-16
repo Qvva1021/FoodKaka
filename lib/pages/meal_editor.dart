@@ -8,10 +8,14 @@ class MealEditor extends StatefulWidget {
     required this.store,
     required this.date,
     this.meal,
+    this.initialFoods,
+    this.notes,
   });
   final FoodStore store;
   final DateTime date;
   final Meal? meal;
+  final List<FoodItem>? initialFoods;
+  final String? notes;
   @override
   State<MealEditor> createState() => _MealEditorState();
 }
@@ -41,7 +45,10 @@ class _MealEditorState extends State<MealEditor> {
     _date = widget.meal?.date ?? widget.date;
     _type = widget.meal?.type ?? mealTypes[1];
     _foods =
-        widget.meal?.foods.map(_FoodFields.new).toList() ?? [_FoodFields()];
+        (widget.meal?.foods ?? widget.initialFoods)
+            ?.map(_FoodFields.new)
+            .toList() ??
+        [_FoodFields()];
   }
 
   @override
@@ -95,6 +102,11 @@ class _MealEditorState extends State<MealEditor> {
           child: ListView(
             padding: const EdgeInsets.all(24),
             children: [
+              if (widget.notes != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text('图片估算，确认后才记账。${widget.notes}'),
+                ),
               OutlinedButton.icon(
                 onPressed: _saving
                     ? null

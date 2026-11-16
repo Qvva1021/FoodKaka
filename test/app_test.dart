@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:food_kaka/main.dart';
 import 'package:food_kaka/data/food_store.dart';
+import 'package:food_kaka/pages/meal_editor.dart';
 
 void main() {
   sqfliteFfiInit();
@@ -71,6 +72,45 @@ void main() {
     await tester.pumpAndSettle();
     expect((await store.day(DateTime.now())).total, 410);
     expect((await store.day(DateTime.now())).meals, hasLength(1));
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('AI预填结果先确认，退出不入账，修改后仅保存确认内容', (tester) async {
+    tester.view.physicalSize = const Size(800, 1400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await store.saveProfile(const Profile('主人', 170, 65, 1800));
+    await tester.pumpWidget(FoodKaKaApp(store: store));
+    await tester.pumpAndSettle();
+    final navigator = Navigator.of(tester.element(find.byType(NavigationBar)));
+    void open() {
+      navigator.push(
+        MaterialPageRoute(
+          builder: (_) => MealEditor(
+            store: store,
+            date: DateTime.now(),
+            initialFoods: const [FoodItem('米饭', 230), FoodItem('鸡蛋', 180)],
+            notes: '测试模型样例',
+          ),
+        ),
+      );
+    }
+
+    open();
+    await tester.pumpAndSettle();
+    expect((await store.day(DateTime.now())).meals, isEmpty);
+    navigator.pop();
+    await tester.pumpAndSettle();
+    expect((await store.day(DateTime.now())).meals, isEmpty);
+    open();
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField).at(1), '250');
+    await tester.pump();
+    expect(find.text('合计 430 kcal'), findsOneWidget);
+    await tester.tap(find.text('确认保存'));
+    await tester.pumpAndSettle();
+    expect((await store.day(DateTime.now())).total, 430);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 

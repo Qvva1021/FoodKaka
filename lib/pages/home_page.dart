@@ -13,10 +13,12 @@ class HomePage extends StatelessWidget {
     required this.onAdd,
     required this.onEdit,
     required this.onDelete,
+    required this.onPhoto,
   });
   final Profile profile;
   final DayLog log;
   final VoidCallback onAdd;
+  final VoidCallback onPhoto;
   final ValueChanged<Meal> onEdit, onDelete;
   @override
   Widget build(BuildContext context) => ListView(
@@ -109,12 +111,12 @@ class HomePage extends StatelessWidget {
       ),
       const SizedBox(height: 20),
       FilledButton.icon(
-        onPressed: null,
+        onPressed: onPhoto,
         icon: const Icon(Icons.camera_alt_outlined),
         label: const Text('拍一餐'),
       ),
       const Text(
-        '拍照识别将在第三阶段开放',
+        '拍照估算，确认后才记账',
         textAlign: TextAlign.center,
         style: TextStyle(color: muted, fontSize: 12),
       ),

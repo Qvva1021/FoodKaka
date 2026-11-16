@@ -7,6 +7,7 @@ import 'pages/home_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/records_page.dart';
 import 'pages/meal_editor.dart';
+import 'pages/photo_page.dart';
 import 'theme.dart';
 
 void main() => runApp(const FoodKaKaApp());
@@ -107,6 +108,14 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
     if (saved == true) await _refresh();
   }
 
+  Future<void> _photo() async {
+    final saved = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => PhotoPage(store: _store!)),
+    );
+    if (saved == true) await _refresh();
+  }
+
   Future<void> _delete(Meal meal) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -180,6 +189,7 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
               profile: _profile!,
               log: _today!,
               onAdd: () => _edit(),
+              onPhoto: _photo,
               onEdit: (meal) => _edit(meal: meal),
               onDelete: _delete,
             ),

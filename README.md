@@ -2,7 +2,9 @@
 
 个人使用的 Android 饮食记账本，使用 Flutter / Dart 开发。
 
-当前已实现个人资料与 BMI、SQLite 本地记账、历史编辑，以及第三阶段拍照/相册/识别确认和 FastAPI 服务。离线记账可以直接使用；真实 AI 识别需要在电脑端配置可用的免费视觉 API，尚未完成真实模型验收。
+当前已实现个人资料与 BMI、SQLite 本地记账、历史编辑、拍照/相册/识别确认和 FastAPI 服务，已构建个人签名的通用 Release APK。离线记账可以直接使用；真实 AI 识别需要在电脑端配置可用的免费视觉 API，尚未完成真实模型验收。
+
+本机安装包位于 `releases/FoodKaKa-0.1.0-release.apk`（约 51 MiB，Android 7.0 及以上，ARM64/ARMv7/x64）。APK 不提交源码仓库。具体校验值、安装与待验收项见 [第五阶段交付说明](方案/2026-11-17_第五阶段打包与验收.md)。
 
 ## 本机运行
 
@@ -41,7 +43,7 @@ $env:ANDROID_AVD_HOME = "$env:ANDROID_USER_HOME\avd"
 .\scripts\dev.ps1 build apk --debug --target-platform android-x64
 ```
 
-此命令生成的 x64 Debug APK 用于本机模拟器，不是面向个人手机的正式发布包。正式签名、手机架构与 Release APK 留到第五阶段处理。
+此命令生成的 x64 Debug APK 用于本机模拟器。正式发布包使用个人签名，运行 `.\scripts\dev.ps1 build apk --release`；首次构建需先用已有 JDK 运行 `python scripts/create_signing.py` 创建本地签名。已有签名时不要重新生成，请备份 `android/upload-keystore.jks` 与 `android/key.properties`，二者不上传 Git。
 
 ## 目录
 

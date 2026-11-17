@@ -5,7 +5,7 @@
         android:usesCleartextTraffic="true"
         android:label="饭咔咔"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@drawable/foodkaka_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"

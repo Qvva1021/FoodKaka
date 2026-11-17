@@ -16,6 +16,30 @@ ThemeData buildTheme() {
     useMaterial3: true,
     colorScheme: scheme,
     scaffoldBackgroundColor: cream,
+    inputDecorationTheme: InputDecorationThemeData(
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: Color(0xFFE5DCD3)),
+      ),
+      errorMaxLines: 3,
+      helperMaxLines: 3,
+      counterStyle: const TextStyle(color: muted),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: ink,
+        minimumSize: const Size(48, 52),
+        side: const BorderSide(color: Color(0xFFD6C8BB)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+    ),
     textTheme: ThemeData.light().textTheme.apply(
       bodyColor: ink,
       displayColor: ink,

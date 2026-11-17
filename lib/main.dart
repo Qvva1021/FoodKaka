@@ -18,6 +18,9 @@ class FoodKaKaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
     title: '饭咔咔',
+    locale: const Locale('zh', 'CN'),
+    supportedLocales: const [Locale('zh', 'CN')],
+    localizationsDelegates: GlobalMaterialLocalizations.delegates,
     debugShowCheckedModeBanner: false,
     theme: buildTheme(),
     home: AppShell(store: store),

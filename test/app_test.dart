@@ -4,6 +4,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:food_kaka/main.dart';
 import 'package:food_kaka/data/food_store.dart';
 import 'package:food_kaka/pages/meal_editor.dart';
+import 'package:food_kaka/theme.dart';
 
 void main() {
   sqfliteFfiInit();
@@ -27,6 +28,7 @@ void main() {
     await tester.enterText(fields.at(3), '1800');
     expect(find.text('BMI：22.5'), findsOneWidget);
     await tester.ensureVisible(find.text('保存并开始记录'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('保存并开始记录'));
     await tester.pumpAndSettle();
     expect(find.text('嗨，小饭团'), findsOneWidget);
@@ -114,6 +116,20 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('历史日期选择器使用中文并可取消', (tester) async {
+    await store.saveProfile(const Profile('主人', 170, 65, 1800));
+    await tester.pumpWidget(FoodKaKaApp(store: store));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('记录'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(dateKey(DateTime.now())));
+    await tester.pumpAndSettle();
+    expect(find.text('取消'), findsOneWidget);
+    await tester.tap(find.text('取消'));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('窄屏与大字体下三页可以布局滚动', (tester) async {
     await store.saveProfile(const Profile('主人', 170, 65, 1800));
     tester.view.physicalSize = const Size(320, 640);
@@ -122,6 +138,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(
       MaterialApp(
+        theme: buildTheme(),
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context)
               .copyWith(textScaler: const TextScaler.linear(1.5)),
